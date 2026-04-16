@@ -62,6 +62,19 @@ Month: 3
 5. Run greedy collection
 >Limit: 5
 
+🏢 Apartment Management System
+========================================
+1. Add Room        8. List Bills
+2. List Rooms      9. Pay Bill
+3. Add Tenant     10. View Unpaid
+4. List Tenants   11. Greedy Collection
+5. Rent Room      12. Heap Demo
+6. Vacate Room    13. Statistics
+7. Generate Bills 14. Exit
+
+## How to Run
+python app.py
+
 ## Technologies Used
 Language: Python 3.7+
 
