@@ -22,11 +22,15 @@ A Python-based apartment management system implementing Object-Oriented Programm
   - Heap finds optimal choice, Greedy makes local optimal decision each step
 
 ## Project Structure
-- `models.py` - Room, Tenant, Bill classes
-- `heap.py` - Min-Heap implementation  
-- `repositories.py` - Data storage
-- `services.py` - Business logic + Greedy collection
-- `app.py` - CLI menu
+
+| File | Description |
+|------|-------------|
+| `models.py` | Data models: Tenant, Room, Bill classes |
+| `heap.py` | Min-Heap ADT implementation (insert, extract_min, peek) |
+| `repositories.py` | CRUD operations for in-memory data storage |
+| `services.py` | Business logic + Greedy Collection Algorithm |
+| `app.py` | CLI menu and application entry point |
+| `README.md` | Project documentation |
 
 ## OOP Concepts
 
