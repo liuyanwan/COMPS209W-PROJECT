@@ -1,1 +1,138 @@
-{"nbformat":4,"nbformat_minor":0,"metadata":{"colab":{"provenance":[],"authorship_tag":"ABX9TyPhlzTCno1n2Is8htBr3WoU"},"kernelspec":{"name":"python3","display_name":"Python 3"},"language_info":{"name":"python"}},"cells":[{"cell_type":"code","execution_count":1,"metadata":{"id":"_h_AUhyqFl6f","executionInfo":{"status":"ok","timestamp":1776373250589,"user_tz":-480,"elapsed":21,"user":{"displayName":"yanwan liu","userId":"02292878796105217020"}}},"outputs":[],"source":["# models.py\n","from datetime import datetime\n","from enum import Enum\n","from typing import Optional, List\n","\n","class RoomStatus(Enum):\n","    \"\"\"Room status enumeration\"\"\"\n","    AVAILABLE = \"available\"\n","    OCCUPIED = \"occupied\"\n","    MAINTENANCE = \"maintenance\"\n","\n","class BillStatus(Enum):\n","    \"\"\"Bill status enumeration\"\"\"\n","    UNPAID = \"unpaid\"\n","    PAID = \"paid\"\n","    OVERDUE = \"overdue\"\n","    COLLECTED = \"collected\"\n","\n","class Room:\n","    \"\"\"Room class - demonstrates encapsulation\"\"\"\n","    _room_counter = 101\n","\n","    def __init__(self, area: float, monthly_rent: float, deposit: float = 0):\n","        self.room_number = Room._room_counter\n","        Room._room_counter += 1\n","        self.area = area\n","        self.monthly_rent = monthly_rent\n","        self.deposit = deposit\n","        self._status = RoomStatus.AVAILABLE\n","        self._current_tenant_id: Optional[int] = None\n","\n","    @property\n","    def status(self) -> RoomStatus:\n","        return self._status\n","\n","    @property\n","    def current_tenant_id(self) -> Optional[int]:\n","        return self._current_tenant_id\n","\n","    def rent_out(self, tenant_id: int) -> bool:\n","        \"\"\"Rent out room to a tenant\"\"\"\n","        if self._status != RoomStatus.AVAILABLE:\n","            return False\n","        self._status = RoomStatus.OCCUPIED\n","        self._current_tenant_id = tenant_id\n","        return True\n","\n","    def vacate(self) -> bool:\n","        \"\"\"Vacate the room\"\"\"\n","        if self._status != RoomStatus.OCCUPIED:\n","            return False\n","        self._status = RoomStatus.AVAILABLE\n","        self._current_tenant_id = None\n","        return True\n","\n","    def __str__(self):\n","        status_icon = {\n","            RoomStatus.AVAILABLE: \"✅\",\n","            RoomStatus.OCCUPIED: \"👤\",\n","            RoomStatus.MAINTENANCE: \"🔧\"\n","        }\n","        tenant_info = f\" | Tenant: {self._current_tenant_id}\" if self._current_tenant_id else \"\"\n","        return f\"{status_icon[self._status]} Room {self.room_number} | {self.area}㎡ | ¥{self.monthly_rent}/month{tenant_info}\"\n","\n","class Tenant:\n","    \"\"\"Tenant class\"\"\"\n","    _id_counter = 1000\n","\n","    def __init__(self, name: str, phone: str, email: str):\n","        self.tenant_id = Tenant._id_counter\n","        Tenant._id_counter += 1\n","        self.name = name\n","        self.phone = phone\n","        self.email = email\n","\n","    def __str__(self):\n","        return f\"Tenant #{self.tenant_id}: {self.name} | {self.phone}\"\n","\n","class Bill:\n","    \"\"\"Bill class - priority element for heap sorting\"\"\"\n","    _bill_counter = 5000\n","\n","    def __init__(self, room_number: int, tenant_id: int, amount: float, due_date: str):\n","        \"\"\"\n","        Initialize a bill\n","        :param room_number: Room number\n","        :param tenant_id: Tenant ID\n","        :param amount: Bill amount\n","        :param due_date: Due date in \"YYYY-MM-DD\" format (priority key for heap)\n","        \"\"\"\n","        self.bill_id = Bill._bill_counter\n","        Bill._bill_counter += 1\n","        self.room_number = room_number\n","        self.tenant_id = tenant_id\n","        self.amount = amount\n","        self.due_date = due_date\n","        self.status = BillStatus.UNPAID\n","        self.collected_date: Optional[str] = None\n","\n","    def mark_as_paid(self) -> bool:\n","        \"\"\"Mark bill as paid\"\"\"\n","        if self.status == BillStatus.UNPAID or self.status == BillStatus.OVERDUE:\n","            self.status = BillStatus.PAID\n","            return True\n","        return False\n","\n","    def mark_as_collected(self, collected_date: str = None) -> bool:\n","        \"\"\"Mark bill as collected (called by greedy algorithm)\"\"\"\n","        if self.status == BillStatus.UNPAID or self.status == BillStatus.OVERDUE:\n","            self.status = BillStatus.COLLECTED\n","            self.collected_date = collected_date or datetime.now().strftime(\"%Y-%m-%d\")\n","            return True\n","        return False\n","\n","    def is_overdue(self, current_date: str = None) -> bool:\n","        \"\"\"Check if bill is overdue\"\"\"\n","        if current_date is None:\n","            current_date = datetime.now().strftime(\"%Y-%m-%d\")\n","        if self.status == BillStatus.UNPAID and self.due_date < current_date:\n","            self.status = BillStatus.OVERDUE\n","            return True\n","        return False\n","\n","    def __lt__(self, other):\n","        \"\"\"\n","        Override less-than operator for heap comparison\n","        Earlier due_date = higher priority\n","        \"\"\"\n","        return self.due_date < other.due_date\n","\n","    def __str__(self):\n","        status_icon = {\n","            BillStatus.UNPAID: \"⏳\",\n","            BillStatus.PAID: \"✅\",\n","            BillStatus.OVERDUE: \"⚠️\",\n","            BillStatus.COLLECTED: \"📞\"\n","        }\n","        return f\"{status_icon[self.status]} Bill #{self.bill_id} | Room {self.room_number} | ¥{self.amount} | Due: {self.due_date}\""]}]}
+# models.py 
+from datetime import datetime
+from enum import Enum
+from typing import Optional, List
+
+class RoomStatus(Enum):
+    """Room status enumeration"""
+    AVAILABLE = "available"
+    OCCUPIED = "occupied"
+    MAINTENANCE = "maintenance"
+
+class BillStatus(Enum):
+    """Bill status enumeration"""
+    UNPAID = "unpaid"
+    PAID = "paid"
+    OVERDUE = "overdue"
+    COLLECTED = "collected"
+
+class Room:
+    """Room class - demonstrates encapsulation"""
+    _room_counter = 101
+    
+    def __init__(self, area: float, monthly_rent: float, deposit: float = 0):
+        self.room_number = Room._room_counter
+        Room._room_counter += 1
+        self.area = area
+        self.monthly_rent = monthly_rent
+        self.deposit = deposit
+        self._status = RoomStatus.AVAILABLE
+        self._current_tenant_id: Optional[int] = None
+    
+    @property
+    def status(self) -> RoomStatus:
+        return self._status
+    
+    @property
+    def current_tenant_id(self) -> Optional[int]:
+        return self._current_tenant_id
+    
+    def rent_out(self, tenant_id: int) -> bool:
+        """Rent out room to a tenant"""
+        if self._status != RoomStatus.AVAILABLE:
+            return False
+        self._status = RoomStatus.OCCUPIED
+        self._current_tenant_id = tenant_id
+        return True
+    
+    def vacate(self) -> bool:
+        """Vacate the room"""
+        if self._status != RoomStatus.OCCUPIED:
+            return False
+        self._status = RoomStatus.AVAILABLE
+        self._current_tenant_id = None
+        return True
+    
+    def __str__(self):
+        status_icon = {
+            RoomStatus.AVAILABLE: "✅",
+            RoomStatus.OCCUPIED: "👤",
+            RoomStatus.MAINTENANCE: "🔧"
+        }
+        tenant_info = f" | Tenant: {self._current_tenant_id}" if self._current_tenant_id else ""
+        return f"{status_icon[self._status]} Room {self.room_number} | {self.area}㎡ | ¥{self.monthly_rent}/month{tenant_info}"
+
+class Tenant:
+    """Tenant class"""
+    _id_counter = 1000
+    
+    def __init__(self, name: str, phone: str, email: str):
+        self.tenant_id = Tenant._id_counter
+        Tenant._id_counter += 1
+        self.name = name
+        self.phone = phone
+        self.email = email
+    
+    def __str__(self):
+        return f"Tenant #{self.tenant_id}: {self.name} | {self.phone}"
+
+class Bill:
+    """Bill class - priority element for heap sorting"""
+    _bill_counter = 5000
+    
+    def __init__(self, room_number: int, tenant_id: int, amount: float, due_date: str):
+        """
+        Initialize a bill
+        :param room_number: Room number
+        :param tenant_id: Tenant ID
+        :param amount: Bill amount
+        :param due_date: Due date in "YYYY-MM-DD" format (priority key for heap)
+        """
+        self.bill_id = Bill._bill_counter
+        Bill._bill_counter += 1
+        self.room_number = room_number
+        self.tenant_id = tenant_id
+        self.amount = amount
+        self.due_date = due_date
+        self.status = BillStatus.UNPAID
+        self.collected_date: Optional[str] = None
+    
+    def mark_as_paid(self) -> bool:
+        """Mark bill as paid"""
+        if self.status == BillStatus.UNPAID or self.status == BillStatus.OVERDUE:
+            self.status = BillStatus.PAID
+            return True
+        return False
+    
+    def mark_as_collected(self, collected_date: str = None) -> bool:
+        """Mark bill as collected (called by greedy algorithm)"""
+        if self.status == BillStatus.UNPAID or self.status == BillStatus.OVERDUE:
+            self.status = BillStatus.COLLECTED
+            self.collected_date = collected_date or datetime.now().strftime("%Y-%m-%d")
+            return True
+        return False
+    
+    def is_overdue(self, current_date: str = None) -> bool:
+        """Check if bill is overdue"""
+        if current_date is None:
+            current_date = datetime.now().strftime("%Y-%m-%d")
+        if self.status == BillStatus.UNPAID and self.due_date < current_date:
+            self.status = BillStatus.OVERDUE
+            return True
+        return False
+    
+    def __lt__(self, other):
+        """
+        Override less-than operator for heap comparison
+        Earlier due_date = higher priority
+        """
+        return self.due_date < other.due_date
+    
+    def __str__(self):
+        status_icon = {
+            BillStatus.UNPAID: "⏳",
+            BillStatus.PAID: "✅",
+            BillStatus.OVERDUE: "⚠️",
+            BillStatus.COLLECTED: "📞"
+        }
+        return f"{status_icon[self.status]} Bill #{self.bill_id} | Room {self.room_number} | ¥{self.amount} | Due: {self.due_date}"
