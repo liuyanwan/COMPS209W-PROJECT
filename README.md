@@ -10,7 +10,7 @@ A Python-based apartment management system implementing Object-Oriented Programm
 - 👤 Tenant Management (add, view, search)
 - 💰 Bill Management (generate monthly bills, pay, view status)
 
-### Algorithm Implementation (Task 2)
+### Algorithm Implementation 
 - **Min-Heap (Priority Queue)**: Bill priority queue based on due date
   - `insert()`: O(log n)
   - `peek()`: O(1)
