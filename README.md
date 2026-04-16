@@ -21,4 +21,53 @@ A Python-based apartment management system implementing Object-Oriented Programm
   - Time Complexity: O(n + k log n)
   - Heap finds optimal choice, Greedy makes local optimal decision each step
 
+## Project Structure
+- `models.py` - Room, Tenant, Bill classes
+- `heap.py` - Min-Heap implementation  
+- `repositories.py` - Data storage
+- `services.py` - Business logic + Greedy collection
+- `app.py` - CLI menu
+
+## OOP Concepts
+
+| Concept | Location | Description |
+|---------|----------|-------------|
+| Encapsulation | `models.py` | Private `_status`, `_current_tenant_id` |
+| Polymorphism | `heap.py` | `__lt__` method for heap comparison |
+| Composition | `services.py` | Service contains multiple repositories |
+
+## Example Workflow
+1. Add a room
+>Area: 50
+Monthly Rent: 3000
+Deposit: 6000
+
+2. Add a tenant
+>Name: AAA
+Phone: 12345678
+Email: AAA@example.com
+
+3. Rent room to tenant
+>Room Number: 101
+Tenant ID: 1000
+
+4. Generate monthly bills
+>Year: 2026
+Month: 3
+
+5. Run greedy collection
+>Limit: 5
+
+## Technologies Used
+Language: Python 3.7+
+
+Data Structures: Custom Min-Heap implementation
+
+Algorithms: Greedy Collection Algorithm
+
+## References
+- [Heap Data Structure - Wikipedia](https://en.wikipedia.org/wiki/Heap_(data_structure))
+- [Greedy Algorithm - Wikipedia](https://en.wikipedia.org/wiki/Greedy_algorithm)
+- [GeeksforGeeks: Heap Data Structure](https://www.geeksforgeeks.org/heap-data-structure/)
+- [GeeksforGeeks: Greedy Algorithms](https://www.geeksforgeeks.org/greedy-algorithms/)
 
